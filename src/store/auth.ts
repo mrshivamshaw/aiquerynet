@@ -9,7 +9,9 @@ interface AuthState {
     loading: boolean,
     error: string | null,
     login: (userName: string, password: string) => Promise<void>,
-    logout: () => void
+    signin: (userName: string, password: string, confirmPassword: string) => Promise<void>,
+    logout: () => void,
+    clearError: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -31,7 +33,21 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ error: (error as any)?.response?.data?.message, loading: false });
         }
     },
+    signin: async (username: string, password: string, confirmPassword: string) => {
+        set({ loading: true });
+        try {
+            const res = await axios.post('/api/auth/signin', { username, password, confirmPassword });
+            if (!(res?.status == 200)) {
+                toast.error(res?.data?.message);
+            } else {
+                set({ token: res?.data?.token, user: res?.data?.user, isAuthenticated: true, loading: false });
+            }
+        } catch (error) {
+            set({ error: (error as any)?.response?.data?.message, loading: false });
+        }
+    },
     logout: () => {
         set({ token: null, user: null, isAuthenticated: false });
-    }
+    },
+    clearError: () => set({ error: null }),
 }))

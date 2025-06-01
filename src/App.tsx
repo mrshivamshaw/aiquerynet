@@ -1,6 +1,13 @@
+import { Route, Routes } from "react-router-dom"
+import ProtectedRoute from "./components/routeAuth/ProtectedRoute"
+import Login from "./pages/Login"
+
 const App = () => {
   return (
-    <div className="text-3xl">App</div>
+    <Routes>
+      <Route path="/" element={<ProtectedRoute><div>Home</div></ProtectedRoute>} />
+      <Route path="/login" element={<Login/>} />
+    </Routes>
   )
 }
 
